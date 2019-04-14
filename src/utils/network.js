@@ -8,6 +8,7 @@ export const API_URL = 'https://private-5fb3f-surveysmock.apiary-mock.com/api';
 
 /*
  * Simple HOC component which passes fetched data using GET method to component
+ * Provides three props - loading: boolean, data: any, error: any
  * @param url - can be either a string or a props mapping function
  */
 export const withGetFetching = (url: string | Function) => (Component: ComponentType) => {
@@ -19,7 +20,7 @@ export const withGetFetching = (url: string | Function) => (Component: Component
     };
 
     componentDidMount() {
-      // Calculate final url, if it's a function - pass current props
+      // Calculate final url, if it's a function - pass to it current props
       const urlFinal = isFunction(url) ? url(this.props) : url;
 
       // Start doing request immediately after mount

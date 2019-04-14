@@ -52,8 +52,8 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 4,
     paddingBottom: theme.spacing.unit * 4,
     [theme.breakpoints.down('md')]: {
-      paddingTop: theme.spacing.unit * 2,
-      paddingBottom: theme.spacing.unit * 2,
+      paddingTop: theme.spacing.unit * 3,
+      paddingBottom: theme.spacing.unit * 3,
     },
   },
 });

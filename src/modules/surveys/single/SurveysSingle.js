@@ -46,13 +46,15 @@ const styles = theme => ({
   },
   card: {
     width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
     [theme.breakpoints.up('md')]: {
       width: 400,
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     [theme.breakpoints.up('lg')]: {
       width: 480,
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
   },
   cardWrapper: {
@@ -61,12 +63,12 @@ const styles = theme => ({
   },
   content: {
     [theme.breakpoints.up('md')]: {
-      paddingTop: theme.spacing.unit * 3,
-      paddingRight: theme.spacing.unit * 3,
+      paddingTop: theme.spacing.unit,
+      paddingRight: theme.spacing.unit,
     },
     [theme.breakpoints.up('lg')]: {
-      paddingTop: theme.spacing.unit * 4,
-      paddingRight: theme.spacing.unit * 4,
+      paddingTop: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
     },
   },
   buttonsWrapper: {
@@ -265,7 +267,7 @@ class SurveysSingle extends Component<Props, any> {
   
   // Renders question card
   renderQuestionCard = (number) => {
-    const { match, classes, data, loading } = this.props;
+    const { match, classes, data } = this.props;
     const { answers } = this.state;
 
     if (!answers) {

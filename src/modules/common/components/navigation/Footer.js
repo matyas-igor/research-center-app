@@ -15,6 +15,9 @@ const styles = theme => ({
   },
 });
 
+/*
+ * Renders app footer
+ */
 const Footer = (props: any) => {
   const { classes, layoutClassName } = props;
   return (

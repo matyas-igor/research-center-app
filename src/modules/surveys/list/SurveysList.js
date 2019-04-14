@@ -33,13 +33,15 @@ const styles = theme => ({
   },
   list: {
     width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
     [theme.breakpoints.up('md')]: {
       width: 400,
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     [theme.breakpoints.up('lg')]: {
       width: 480,
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
   },
   listWrapper: {
@@ -48,12 +50,12 @@ const styles = theme => ({
   },
   content: {
     [theme.breakpoints.up('md')]: {
-      paddingTop: theme.spacing.unit * 3,
-      paddingRight: theme.spacing.unit * 3,
+      paddingTop: theme.spacing.unit,
+      paddingRight: theme.spacing.unit,
     },
     [theme.breakpoints.up('lg')]: {
-      paddingTop: theme.spacing.unit * 4,
-      paddingRight: theme.spacing.unit * 4,
+      paddingTop: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
     },
   },
 });

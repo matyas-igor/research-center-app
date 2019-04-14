@@ -15,6 +15,9 @@ const styles = theme => ({
   progressWrapper: {
     position: 'absolute',
   },
+  content: {
+    width: '100%',
+  },
 });
 
 type Props = {
@@ -23,6 +26,10 @@ type Props = {
   children: any,
 };
 
+/*
+ * Helper component which renders progress when loading is in progress
+ * After loading is done progress transits fade-out and content fade-in
+ */
 const Loading = (props: Props) => {
   const { show, classes, children } = props;
   return (<Fragment>
@@ -32,7 +39,7 @@ const Loading = (props: Props) => {
         <CircularProgress className={classes.progress} />
       </Grid>
     </Fade>
-    <Fade in={!show}>
+    <Fade in={!show} className={classes.content}>
       {/* Content */}
       <div>{children}</div>
     </Fade>

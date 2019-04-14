@@ -22,6 +22,9 @@ const styles = theme => ({
   }
 });
 
+/*
+ * Renders app header
+ */
 const Header = (props: any) => {
   const { classes } = props;
   return (

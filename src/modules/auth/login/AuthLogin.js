@@ -19,11 +19,14 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   paper: {
-    marginTop: theme.spacing.unit * 8,
+    marginTop: theme.spacing.unit * 6,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    [theme.breakpoints.down('md')]: {
+      marginTop: theme.spacing.unit * 2,
+    },
   },
   avatar: {
     margin: theme.spacing.unit,
@@ -42,6 +45,9 @@ const styles = theme => ({
   }
 });
 
+/*
+ * Renders simple example of login form
+ */
 const AuthLogin = (props: any) => {
   const { classes, history } = props;
   return (
