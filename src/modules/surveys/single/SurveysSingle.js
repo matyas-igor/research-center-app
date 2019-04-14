@@ -25,6 +25,8 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 
 import ReplayIcon from '@material-ui/icons/Replay';
+import WhatshotIcon from '@material-ui/icons/Whatshot';
+import SchoolIcon from '@material-ui/icons/School';
 
 import { API_URL, withGetFetching } from '../../../utils/network';
 
@@ -87,6 +89,13 @@ const styles = theme => ({
   },
   iconSmall: {
     fontSize: 16,
+  },
+  avatar: {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit * 2,
+    backgroundColor: theme.palette.secondary.main,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 });
 
@@ -154,6 +163,15 @@ class SurveysSingle extends Component<Props, any> {
     });
   };
 
+  // Restart survey - clear answers and move to start
+  doRestartSurvey = () => {
+    const { history, match } = this.props;
+    this.setState({ answers: [] }, () => {
+      // Navigate to first question
+      history.push(`/surveys/${match.params.id}/start`);
+    });
+  };
+
   // Save questions answers & move to next stage if needed
   doAnswerQuestion = (idx: number, questions: Array<any>, question_id: string, value: string) => {
     const { match, history } = this.props;
@@ -189,10 +207,13 @@ class SurveysSingle extends Component<Props, any> {
     return (
       <Card className={classes.card}>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
+          <Avatar className={classes.avatar}>
+            <SchoolIcon />
+          </Avatar>
+          <Typography variant="h5" component="h2" gutterBottom align="center">
             Welcome to {data.survey.title} survey!
           </Typography>
-          <Typography component="p" color="textSecondary">
+          <Typography component="p" color="textSecondary" align="center">
             Start by pressing the button below
           </Typography>
         </CardContent>
@@ -218,17 +239,20 @@ class SurveysSingle extends Component<Props, any> {
     return (
       <Card className={classes.card}>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
+          <Avatar className={classes.avatar}>
+            <WhatshotIcon />
+          </Avatar>
+          <Typography variant="h5" component="h2" gutterBottom align="center">
             Thank you for participating in our survey!
           </Typography>
-          <Typography component="p" color="textSecondary">
+          <Typography component="p" color="textSecondary" align="center">
             Answers have been successfully submitted
           </Typography>
         </CardContent>
         <CardActions>
           <Grid container direction="row" justify="center" className={classes.buttonsWrapper}>
             <Button
-              onClick={this.doStartSurvey}
+              onClick={this.doRestartSurvey}
               className={classes.button}
             >
               <ReplayIcon className={classNames(classes.iconLeft, classes.iconSmall)} />
