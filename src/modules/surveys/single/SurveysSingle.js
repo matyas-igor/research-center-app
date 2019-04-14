@@ -2,6 +2,7 @@
 
 import React, { Fragment, Component } from 'react';
 
+import { Redirect } from 'react-router-dom';
 import classNames from 'classnames';
 
 import isNumber from 'lodash/isNumber';
@@ -13,7 +14,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -119,16 +119,10 @@ type Props = {
 
 class SurveysSingle extends Component<Props, any> {
   state = {
-    // Answered questions
-    answers: [],
+    // Answered questions, by default set it to null to check the case
+    // when user was navigated directly to the middle of the test
+    answers: null,
   };
-
-  componentDidMount() {
-    const { history, match } = this.props;
-    if (this.getNumber(match.params.number) === null) {
-      history.push(`/surveys/${match.params.id}/start`);
-    }
-  }
 
   /*
    * Simple helper to check if param is defined and correct
@@ -141,10 +135,13 @@ class SurveysSingle extends Component<Props, any> {
     if (number === 'start' || number === 'finish') {
       return number;
     }
-    const numberParsed = parseInt(number);
-    if (isNumber(numberParsed)) {
-      return numberParsed;
+    if (number.startsWith('question-')) {
+      const numberParsed = parseInt(number.replace('question-', ''));
+      if (isNumber(numberParsed)) {
+        return numberParsed;
+      }
     }
+
     return null;
   };
 
@@ -159,14 +156,14 @@ class SurveysSingle extends Component<Props, any> {
     const { history, match } = this.props;
     this.setState({ answers: [] }, () => {
       // Navigate to first question
-      history.push(`/surveys/${match.params.id}/1`);
+      history.push(`/surveys/${match.params.id}/question-1`);
     });
   };
 
   // Restart survey - clear answers and move to start
   doRestartSurvey = () => {
     const { history, match } = this.props;
-    this.setState({ answers: [] }, () => {
+    this.setState({ answers: null }, () => {
       // Navigate to first question
       history.push(`/surveys/${match.params.id}/start`);
     });
@@ -176,32 +173,18 @@ class SurveysSingle extends Component<Props, any> {
   doAnswerQuestion = (idx: number, questions: Array<any>, question_id: string, value: string) => {
     const { match, history } = this.props;
     this.setState(({ answers }) => {
-      // make copy of an existing array and set value at a given index
+      // make copy of an existing array and set new value at a given index
       const newAnswers = [...answers];
       newAnswers[idx] = { question_id, value };
-      return {
-        answers: newAnswers,
-      };
+      return { answers: newAnswers };
     }, () => {
       // calculate new number to set as url param
-      const number = idx < questions.length - 1 ? idx + 2 : 'finish';
+      const number = idx < questions.length - 1 ? `question-${idx + 2}` : 'finish';
       history.push(`/surveys/${match.params.id}/${number}`);
     });
   };
 
-  /*
-   id: "Q868b4b"
-   options: Array(5)
-   0: "BVB"
-   1: "Bayern Munich"
-   2: "Manchester United"
-   3: "FC Barcelona"
-   4: "Some other team"
-   length: 5
-   __proto__: Array(0)
-   title: "What is the best soccer team in the world?"
-   */
-
+  // Renders start card
   renderStartCard = () => {
     const { classes, data } = this.props;
     return (
@@ -233,9 +216,17 @@ class SurveysSingle extends Component<Props, any> {
       </Card>
     );
   };
-  
+
+  // Renders finish card
   renderFinishCard = () => {
-    const { classes, data } = this.props;
+    const { classes, match } = this.props;
+    const { answers } = this.state;
+
+    if (!answers) {
+      // user were navigated here directly - move to start
+      return (<Redirect to={`/surveys/${match.params.id}/start`} />);
+    }
+
     return (
       <Card className={classes.card}>
         <CardContent>
@@ -272,18 +263,19 @@ class SurveysSingle extends Component<Props, any> {
     );
   };
   
-  renderProcessCard = (number) => {
-    const { classes, data, loading } = this.props;
+  // Renders question card
+  renderQuestionCard = (number) => {
+    const { match, classes, data, loading } = this.props;
     const { answers } = this.state;
 
-    console.log('DATA', data, loading);
-    if (loading) {
-      return null;
+    if (!answers) {
+      // user were navigated here directly - move to start
+      return (<Redirect to={`/surveys/${match.params.id}/start`} />);
     }
 
     // Calculate question index in array
     const questionIndex = number - 1;
-    // Current question user is answering now
+    // Current question which user is answering now
     const question = data.survey.questions[questionIndex];
     // Current answer in question, if user already answered this question
     const answer = answers[questionIndex];
@@ -323,11 +315,16 @@ class SurveysSingle extends Component<Props, any> {
   
   render() {
     const { classes, loading, data, match } = this.props;
-    const { answers } = this.state;
+
     const number = this.getNumber(match.params.number);
+    if (number === null) {
+      // if number param from url is not defined - simply redirect to start
+      return (<Redirect to={`/surveys/${match.params.id}/start`} />);
+    }
+
     return (
       <Grid container direction="column" alignItems="center" className={classes.content}>
-        <Loading show={loading && number === null}>
+        <Loading show={loading}>
           {!loading && (<Fragment>
             <Typography
               component="h1"
@@ -351,7 +348,7 @@ class SurveysSingle extends Component<Props, any> {
             <div className={classes.cardWrapper}>
               {number === 'start' && this.renderStartCard()}
               {number === 'finish' && this.renderFinishCard()}
-              {isNumber(number) && this.renderProcessCard(number)}
+              {isNumber(number) && this.renderQuestionCard(number)}
             </div>
           </Fragment>)}
         </Loading>
