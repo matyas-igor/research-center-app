@@ -2,6 +2,7 @@
 
 import React, { Fragment } from 'react';
 
+import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +15,10 @@ const styles = theme => ({
   },
   progressWrapper: {
     position: 'absolute',
+    paddingBottom: theme.spacing.unit * 2,
+  },
+  progressSpacer: {
+    minHeight: theme.spacing.unit * 6,
   },
   content: {
     width: '100%',
@@ -34,12 +39,18 @@ const Loading = (props: Props) => {
   const { show, classes, children } = props;
   return (<Fragment>
     {/* Loader */}
-    <Fade in={show} className={classes.progressWrapper}>
+    <Fade
+      in={show}
+      className={classes.progressWrapper}
+    >
       <Grid container direction="row" justify="center">
         <CircularProgress className={classes.progress} />
       </Grid>
     </Fade>
-    <Fade in={!show} className={classes.content}>
+    <Fade
+      in={!show}
+      className={classNames(classes.content, show && classes.progressSpacer)}
+    >
       {/* Content */}
       <div>{children}</div>
     </Fade>
