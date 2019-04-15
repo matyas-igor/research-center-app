@@ -13,7 +13,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 
 /*
- * Renders simple example of profile page
+ * Renders very simple example of profile page
  */
 const ProfileBasic = () => {
   return (

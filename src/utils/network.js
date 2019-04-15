@@ -24,7 +24,7 @@ export const withGetFetching = (url: string | Function) => (WrappedComponent: Co
     };
 
     componentDidMount() {
-      // calculate final url, if it's a function - pass to it current props
+      // calculate final url, if it's a function - pass current props to it
       const urlFinal = isFunction(url) ? url(this.props) : url;
 
       // start doing request immediately after mount
@@ -57,7 +57,7 @@ export const withPostRequesting = (requests: { [string]: string | Function }) =>
     state = {
       requesting: mapValues(requests, () => false),
       ...mapValues(requests, (requestUrl, requestName) => {
-        // returns callable function where you can pass request props
+        // returns callable function where you can start POST request and pass form data as a props
         return (props: any) => new Promise((resolve) => {
           // set requesting flag to true at first
           this.setState(({ requesting }) => ({
@@ -70,7 +70,7 @@ export const withPostRequesting = (requests: { [string]: string | Function }) =>
             let data = null;
             let error = null;
 
-            // calculate final url, if it's a function - pass to it current props
+            // calculate final url, if it's a function - pass current props to it
             const requestUrlFinal = isFunction(requestUrl) ? requestUrl(this.props) : requestUrl;
 
             // then starts POST request

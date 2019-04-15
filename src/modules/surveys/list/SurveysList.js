@@ -68,6 +68,9 @@ type Props = {
   },
 };
 
+/*
+ * Renders list of available surveys
+ */
 export const SurveysList = (props: Props) => {
   const { classes, loading, data, history } = props;
   const goToSurvey = (id: string) => { history.push(`/surveys/${id}`); };
@@ -93,12 +96,13 @@ export const SurveysList = (props: Props) => {
         Select a survey to start
       </Typography>
 
+      {/* Survey's list */}
       <div className={classes.listWrapper}>
         <Loading show={loading}>
           <Paper className={classes.list}>
             <List>
               {!loading && data.surveys.map((survey, idx) => (
-                <ListItem key={idx} button onClick={() => goToSurvey(survey.id)}>
+                <ListItem key={`survey-${idx}`} button onClick={() => goToSurvey(survey.id)}>
                   <Avatar>
                     <PollIcon />
                   </Avatar>

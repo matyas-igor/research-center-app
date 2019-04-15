@@ -125,12 +125,16 @@ type Props = {
   },
 };
 
+/*
+ * Main component to render given survey
+ * Can be in three stages: start, answering question and finish - depending on 'number' param from URL
+ */
 class SurveysSingle extends Component<Props, any> {
   state = {
-    // Answered questions, by default set it to null to check the case
+    // Answered questions, by default set to null to handle the case
     // when user was navigated directly to the middle of the test
     answers: null,
-    // Result of test - 'true' if successful, false if not
+    // Result of saving survey's answers - 'true' if successful, 'false' if not
     result: null,
   };
 
@@ -174,7 +178,7 @@ class SurveysSingle extends Component<Props, any> {
   doRestartSurvey = () => {
     const { history, match } = this.props;
     this.setState({ answers: null, result: null }, () => {
-      // Navigate to first question
+      // Navigate to the beginning of survey
       history.push(`/surveys/${match.params.id}/start`);
     });
   };
@@ -196,19 +200,20 @@ class SurveysSingle extends Component<Props, any> {
         history.push(`/surveys/${match.params.id}/${number}`);
       }, theme.transitions.duration.shorter);
 
-      // calling save request when survey is done
+      // save answers if survey is done
       if (number === 'finish') {
         this.doSaveAnswers();
       }
     });
   };
 
+  // Starts request to save survey completeness
   doSaveAnswers = async () => {
     const { complete } = this.props;
     const { answers } = this.state;
     // start POST request to save answers
     const { data } = await complete({ completion: answers });
-    // save result
+    // show result in UI
     this.setState({ result: data && data.status === 'ok' });
   };
 
@@ -267,7 +272,7 @@ class SurveysSingle extends Component<Props, any> {
           <Typography component="p" color="textSecondary" align="center">
             {requesting.complete && 'Answers are currently being submitted...'}
             {(!requesting.complete && result) && 'Answers have been successfully submitted'}
-            {(!requesting.complete && !result) && 'Error occurred during saving answers'}
+            {(!requesting.complete && !result) && 'Error occurred during submitting answers'}
           </Typography>
         </CardContent>
         <CardActions className={classes.actions}>
@@ -305,11 +310,11 @@ class SurveysSingle extends Component<Props, any> {
       return (<Redirect to={`/surveys/${match.params.id}/start`} />);
     }
 
-    // Calculate question index in array
+    // calculate question index in array
     const questionIndex = number - 1;
-    // Current question which user is answering now
+    // current question which user is answering now
     const question = data.survey.questions[questionIndex];
-    // Current answer in question, if user already answered this question
+    // current answer in question, if user already answered this question
     const answer = answers[questionIndex];
 
     return (<Fade in key={`question-${number}`} timeout={theme.transitions.duration.complex}>
@@ -348,6 +353,7 @@ class SurveysSingle extends Component<Props, any> {
   render() {
     const { classes, loading, data, match } = this.props;
 
+    // get stage/question number from url address
     const number = this.getNumber(match.params.number);
     if (number === null) {
       // if number param from url is not defined - simply redirect to start
