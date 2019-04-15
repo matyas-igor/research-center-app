@@ -10,7 +10,7 @@ import parseInt from 'lodash/parseInt';
 
 import { compose } from 'recompose';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -23,6 +23,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
+import Fade from '@material-ui/core/Fade';
 
 import ReplayIcon from '@material-ui/icons/Replay';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
@@ -180,7 +181,7 @@ class SurveysSingle extends Component<Props, any> {
 
   // Save questions answers & move to next stage if needed
   doAnswerQuestion = (idx: number, questions: Array<any>, question_id: string, value: string) => {
-    const { match, history } = this.props;
+    const { match, history, theme } = this.props;
     this.setState(({ answers }) => {
       // make copy of an existing array and set new value at a given index
       const newAnswers = [...answers];
@@ -189,7 +190,11 @@ class SurveysSingle extends Component<Props, any> {
     }, () => {
       // calculate new number to set as url param
       const number = idx < questions.length - 1 ? `question-${idx + 2}` : 'finish';
-      history.push(`/surveys/${match.params.id}/${number}`);
+
+      // navigate to next page after small delay so user can see visual effect of selected answer
+      setTimeout(() => {
+        history.push(`/surveys/${match.params.id}/${number}`);
+      }, theme.transitions.duration.shorter);
 
       // calling save request when survey is done
       if (number === 'finish') {
@@ -242,7 +247,7 @@ class SurveysSingle extends Component<Props, any> {
 
   // Renders finish card
   renderFinishCard = () => {
-    const { classes, match, requesting } = this.props;
+    const { classes, match, requesting, theme } = this.props;
     const { answers, result } = this.state;
 
     if (!answers) {
@@ -250,7 +255,7 @@ class SurveysSingle extends Component<Props, any> {
       return (<Redirect to={`/surveys/${match.params.id}/start`} />);
     }
 
-    return (
+    return (<Fade in timeout={theme.transitions.duration.standard}>
       <Card className={classes.card}>
         <CardContent>
           <Avatar className={classes.avatar}>
@@ -287,12 +292,12 @@ class SurveysSingle extends Component<Props, any> {
           </Loading>
         </CardActions>
       </Card>
-    );
+    </Fade>);
   };
   
   // Renders question card
   renderQuestionCard = (number) => {
-    const { match, classes, data } = this.props;
+    const { match, classes, data, theme } = this.props;
     const { answers } = this.state;
 
     if (!answers) {
@@ -307,7 +312,7 @@ class SurveysSingle extends Component<Props, any> {
     // Current answer in question, if user already answered this question
     const answer = answers[questionIndex];
 
-    return (
+    return (<Fade in key={`question-${number}`} timeout={theme.transitions.duration.complex}>
       <Card className={classes.card}>
         <CardContent>
           <Typography variant="subtitle2" color="textSecondary" gutterBottom>
@@ -337,7 +342,7 @@ class SurveysSingle extends Component<Props, any> {
           </List>
         </CardContent>
       </Card>
-    );
+    </Fade>);
   };
   
   render() {
@@ -389,4 +394,5 @@ export default compose(
   withGetFetching(({ match }) => `${API_URL}/surveys/${match.params.id}`),
   withPostRequesting({ complete: ({ match }) => `${API_URL}/surveys/${match.params.id}/completions` }),
   withStyles(styles),
+  withTheme(styles),
 )(SurveysSingle);
