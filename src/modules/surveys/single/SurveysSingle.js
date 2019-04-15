@@ -28,7 +28,7 @@ import ReplayIcon from '@material-ui/icons/Replay';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
 import SchoolIcon from '@material-ui/icons/School';
 
-import { API_URL, withGetFetching } from '../../../utils/network';
+import { API_URL, withGetFetching, withPostRequesting } from '../../../utils/network';
 
 import Loading from '../../common/components/loading/Loading';
 
@@ -99,11 +99,16 @@ const styles = theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
   },
+  actions: {
+    position: 'relative',
+  },
 });
 
 type Props = {
   classes: Object,
   loading: boolean,
+  requesting: { [string]: boolean },
+  complete: (any) => ({ data: any, error: any }),
   data: {
     survey: {
       title: string,
@@ -124,6 +129,8 @@ class SurveysSingle extends Component<Props, any> {
     // Answered questions, by default set it to null to check the case
     // when user was navigated directly to the middle of the test
     answers: null,
+    // Result of test - 'true' if successful, false if not
+    result: null,
   };
 
   /*
@@ -162,10 +169,10 @@ class SurveysSingle extends Component<Props, any> {
     });
   };
 
-  // Restart survey - clear answers and move to start
+  // Restart survey - clear answers and result and move to start
   doRestartSurvey = () => {
     const { history, match } = this.props;
-    this.setState({ answers: null }, () => {
+    this.setState({ answers: null, result: null }, () => {
       // Navigate to first question
       history.push(`/surveys/${match.params.id}/start`);
     });
@@ -183,7 +190,21 @@ class SurveysSingle extends Component<Props, any> {
       // calculate new number to set as url param
       const number = idx < questions.length - 1 ? `question-${idx + 2}` : 'finish';
       history.push(`/surveys/${match.params.id}/${number}`);
+
+      // calling save request when survey is done
+      if (number === 'finish') {
+        this.doSaveAnswers();
+      }
     });
+  };
+
+  doSaveAnswers = async () => {
+    const { complete } = this.props;
+    const { answers } = this.state;
+    // start POST request to save answers
+    const { data } = await complete({ completion: answers });
+    // save result
+    this.setState({ result: data && data.status === 'ok' });
   };
 
   // Renders start card
@@ -221,8 +242,8 @@ class SurveysSingle extends Component<Props, any> {
 
   // Renders finish card
   renderFinishCard = () => {
-    const { classes, match } = this.props;
-    const { answers } = this.state;
+    const { classes, match, requesting } = this.props;
+    const { answers, result } = this.state;
 
     if (!answers) {
       // user were navigated here directly - move to start
@@ -239,27 +260,31 @@ class SurveysSingle extends Component<Props, any> {
             Thank you for participating in our survey!
           </Typography>
           <Typography component="p" color="textSecondary" align="center">
-            Answers have been successfully submitted
+            {requesting.complete && 'Answers are currently being submitted...'}
+            {(!requesting.complete && result) && 'Answers have been successfully submitted'}
+            {(!requesting.complete && !result) && 'Error occurred during saving answers'}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Grid container direction="row" justify="center" className={classes.buttonsWrapper}>
-            <Button
-              onClick={this.doRestartSurvey}
-              className={classes.button}
-            >
-              <ReplayIcon className={classNames(classes.iconLeft, classes.iconSmall)} />
-              Retry
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={this.goToSurveysList}
-              className={classes.button}
-            >
-              Go to surveys list
-            </Button>
-          </Grid>
+        <CardActions className={classes.actions}>
+          <Loading show={requesting.complete}>
+            <Grid container direction="row" justify="center" className={classes.buttonsWrapper}>
+              <Button
+                onClick={this.doRestartSurvey}
+                className={classes.button}
+              >
+                <ReplayIcon className={classNames(classes.iconLeft, classes.iconSmall)} />
+                Retry
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={this.goToSurveysList}
+                className={classes.button}
+              >
+                Go to surveys list
+              </Button>
+            </Grid>
+          </Loading>
         </CardActions>
       </Card>
     );
@@ -362,5 +387,6 @@ class SurveysSingle extends Component<Props, any> {
 
 export default compose(
   withGetFetching(({ match }) => `${API_URL}/surveys/${match.params.id}`),
+  withPostRequesting({ complete: ({ match }) => `${API_URL}/surveys/${match.params.id}/completions` }),
   withStyles(styles),
 )(SurveysSingle);
