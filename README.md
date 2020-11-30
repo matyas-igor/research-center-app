@@ -2,6 +2,8 @@
 
 Simple application for polls simulation built with React and Material-UI.
 
+Live demo: https://research-center.herokuapp.com/
+
 ![Screen Shot 2020-11-30 at 23 13 08](https://user-images.githubusercontent.com/3536796/100659426-e8bc8000-3350-11eb-8ffa-fbd02e304a9f.png)
 
 ![Screen Shot 2020-11-30 at 23 13 11](https://user-images.githubusercontent.com/3536796/100659435-eb1eda00-3350-11eb-8f33-4a882d03fabd.png)
