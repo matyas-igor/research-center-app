@@ -2,6 +2,14 @@
 
 Simple application for polls simulation built with React and Material-UI.
 
+![Screen Shot 2020-11-30 at 23 11 17](https://user-images.githubusercontent.com/3536796/100659226-9ed39a00-3350-11eb-98b1-41260e370d6d.png)
+
+![Screen Shot 2020-11-30 at 23 08 14](https://user-images.githubusercontent.com/3536796/100659116-7186ec00-3350-11eb-80a7-175f8bbc5248.png)
+
+![Screen Shot 2020-11-30 at 23 08 18](https://user-images.githubusercontent.com/3536796/100659125-7481dc80-3350-11eb-9fdd-f94d3b192d8d.png)
+
+![Screen Shot 2020-11-30 at 23 08 30](https://user-images.githubusercontent.com/3536796/100659135-777ccd00-3350-11eb-8fa8-4d2030464679.png)
+
 --- 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
