@@ -31,7 +31,7 @@ const Footer = (props: any) => {
         >
           <Grid item>
             <Typography variant="subtitle1" color="textSecondary">
-              <Link href={'https://daliaresearch.com'}>Dalia Research</Link>
+              Research Center
             </Typography>
           </Grid>
           <Grid item>
